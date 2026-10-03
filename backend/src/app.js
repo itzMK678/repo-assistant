@@ -1,8 +1,15 @@
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
-import env from "./config/env.js";
+import { env } from "./config/env.js";
+
 import healthRoutes from "./routes/health.routes.js";
+import githubRoutes from "./routes/github.routes.js";
+import repositoryRoutes from "./routes/repository.routes.js";
+import agentRoutes from "./routes/agent.routes.js";
+import sandboxRoutes from "./routes/sandbox.routes.js";
+
 import {
   notFoundHandler,
   errorHandler
@@ -10,6 +17,7 @@ import {
 
 const app = express();
 
+app.use(cookieParser());
 app.use(
   cors({
     origin: env.frontendUrl,
@@ -26,7 +34,15 @@ app.get("/", (req, res) => {
   });
 });
 
+app.use("/api/agent",agentRoutes);
+
 app.use("/api/health", healthRoutes);
+
+app.use("/api/github",githubRoutes);
+
+app.use("/api/repositories", repositoryRoutes);
+
+app.use("/api/sandbox",sandboxRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

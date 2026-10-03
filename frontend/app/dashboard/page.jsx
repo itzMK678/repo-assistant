@@ -1,54 +1,76 @@
+"use client";
+
+import { useState } from "react";
+
+import RepositoryList from "../../components/RepositoryList";
+import RepositoryAnalyzer from "../../components/RepositoryAnalyzer";
 import BackendStatus from "../../components/BackendStatus";
 
 export default function DashboardPage() {
+  const [
+    selectedRepository,
+    setSelectedRepository,
+  ] = useState(null);
+
   return (
-    <main className="min-h-screen bg-gray-950 px-6 py-10 text-white">
+    <main className="min-h-screen p-8">
       <div className="mx-auto max-w-6xl">
-        <header className="mb-10">
-          <p className="text-sm font-medium text-gray-400">
-            AI SOFTWARE ENGINEER
-          </p>
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold">
+              RepoAssistant
+            </h1>
 
-          <h1 className="mt-2 text-4xl font-bold">
-            Developer Dashboard
-          </h1>
-
-          <p className="mt-3 text-gray-400">
-            Phase 1 project foundation
-          </p>
-        </header>
-
-        <section className="grid gap-6 md:grid-cols-2">
-          <div className="rounded-xl border border-gray-800 bg-gray-900 p-6">
-            <h2 className="text-xl font-semibold">
-              Backend
-            </h2>
-
-            <p className="mt-2 text-gray-400">
-              Express API and PostgreSQL connection status.
+            <p className="mt-2 text-gray-600">
+              Select a repository to work with.
             </p>
-
-            <div className="mt-5">
-              <BackendStatus />
-            </div>
           </div>
 
-          <div className="rounded-xl border border-gray-800 bg-gray-900 p-6">
-            <h2 className="text-xl font-semibold">
-              Project Status
-            </h2>
-
-            <div className="mt-5 space-y-3 text-gray-300">
-              <div>✓ Next.js frontend</div>
-              <div>✓ Express backend</div>
-              <div>✓ PostgreSQL</div>
-              <div>○ GitHub integration — Phase 2</div>
-              <div>○ AI Agent — Phase 5</div>
-              <div>○ Docker Sandbox — Phase 4</div>
-              <div>○ SSE — Phase 6</div>
-            </div>
+          <div className="text-sm">
+            <BackendStatus />
           </div>
-        </section>
+        </div>
+
+        <RepositoryList
+          onSelect={
+            setSelectedRepository
+          }
+        />
+
+        {selectedRepository && (
+          <>
+            <div className="mt-8 rounded-xl border p-6">
+              <h2 className="text-xl font-semibold">
+                Selected Repository
+              </h2>
+
+              <p className="mt-3">
+                {
+                  selectedRepository.fullName
+                }
+              </p>
+
+              <p className="mt-2 text-sm text-gray-500">
+                Owner:{" "}
+                {
+                  selectedRepository.owner
+                }
+              </p>
+
+              <p className="mt-2 text-sm text-gray-500">
+                Default branch:{" "}
+                {
+                  selectedRepository.defaultBranch
+                }
+              </p>
+            </div>
+
+            <RepositoryAnalyzer
+              owner={selectedRepository.owner}
+              repo={selectedRepository.name}
+            />
+          </>
+        )}
       </div>
     </main>
   );

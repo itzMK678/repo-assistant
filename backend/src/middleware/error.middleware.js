@@ -8,8 +8,19 @@ export const notFoundHandler = (req, res) => {
 export const errorHandler = (error, req, res, next) => {
   console.error("Server error:", error);
 
-  res.status(500).json({
+  const statusCode =
+    error.statusCode ||
+    error.status ||
+    error.response?.status ||
+    500;
+
+  const message =
+    error.response?.data?.message ||
+    error.message ||
+    "Internal server error";
+
+  res.status(statusCode).json({
     success: false,
-    message: "Internal server error"
+    message
   });
 };

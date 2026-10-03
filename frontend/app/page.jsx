@@ -1,32 +1,32 @@
 import Link from "next/link";
 
-export default function Home() {
-  return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-950 px-6 text-white">
-      <div className="w-full max-w-3xl text-center">
-        <p className="mb-4 text-sm font-medium text-gray-400">
-          AI SOFTWARE ENGINEER
-        </p>
+import GitHubButton from "../components/GitHubButton";
 
-        <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
-          Your AI Coding Agent
+export default function HomePage() {
+  return (
+    <main className="min-h-screen">
+      <section className="mx-auto max-w-5xl px-6 py-24">
+        <h1 className="text-5xl font-bold">
+          RepoAssistant
         </h1>
 
-        <p className="mx-auto mt-6 max-w-2xl text-lg text-gray-400">
-          Connect GitHub repositories, give coding tasks to an AI agent,
-          review the generated changes, and create Pull Requests with
-          human approval.
+        <p className="mt-6 max-w-2xl text-lg text-gray-600">
+          AI Software Engineer Agent that
+          helps you understand and work with
+          your GitHub repositories.
         </p>
 
-        <div className="mt-8">
+        <div className="mt-8 flex gap-4">
+          <GitHubButton />
+
           <Link
             href="/dashboard"
-            className="inline-flex rounded-lg bg-white px-6 py-3 font-semibold text-gray-950 transition hover:bg-gray-200"
+            className="rounded-lg border px-5 py-3"
           >
-            Open Dashboard
+            Dashboard
           </Link>
         </div>
-      </div>
+      </section>
     </main>
   );
 }
