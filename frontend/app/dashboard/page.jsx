@@ -1,5 +1,5 @@
 "use client";
-
+import Link from "next/link";
 import { useState } from "react";
 
 import RepositoryList from "../../components/RepositoryList";
@@ -25,9 +25,17 @@ export default function DashboardPage() {
               Select a repository to work with.
             </p>
           </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <Link
+              href="/dashboard/git"
+              className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-500"
+            >
+              Git Workflow →
+            </Link>
 
-          <div className="text-sm">
-            <BackendStatus />
+            <div className="text-sm">
+              <BackendStatus />
+            </div>
           </div>
         </div>
 
