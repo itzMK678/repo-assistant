@@ -8,6 +8,7 @@
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "test": "node test/phase5.test.js",
+    "test:phase8": "node --test test/phase8.test.js",
     "demo": "node test/demo.js"
   },
   "dependencies": {

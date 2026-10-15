@@ -33,6 +33,13 @@ export default function DashboardPage() {
               Git Workflow →
             </Link>
 
+            <Link
+              href="/dashboard/testing"
+              className="inline-flex items-center rounded-lg border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800"
+            >
+              Phase 8 Testing
+            </Link>
+
             <div className="text-sm">
               <BackendStatus />
             </div>
