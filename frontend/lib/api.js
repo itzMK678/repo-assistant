@@ -169,3 +169,35 @@ export async function detectProjectType(owner, repo) {
 
     return data;
 }
+
+export async function runAgentTask({ task, repository, files }) {
+    return apiFetch("/api/agent/run", {
+        method: "POST",
+        body: JSON.stringify({
+            task,
+            repository,
+            files,
+        }),
+    });
+}
+
+export async function publishChanges({
+    owner,
+    repo,
+    branchName,
+    title,
+    summary,
+    files,
+}) {
+    return apiFetch("/api/agent/publish", {
+        method: "POST",
+        body: JSON.stringify({
+            owner,
+            repo,
+            branchName,
+            title,
+            summary,
+            files,
+        }),
+    });
+}

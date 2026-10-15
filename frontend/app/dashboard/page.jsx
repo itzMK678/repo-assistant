@@ -5,6 +5,7 @@ import { useState } from "react";
 import RepositoryList from "../../components/RepositoryList";
 import RepositoryAnalyzer from "../../components/RepositoryAnalyzer";
 import BackendStatus from "../../components/BackendStatus";
+import AgentTaskRunner from "../../components/AgentTaskRunner";
 
 export default function DashboardPage() {
   const [
@@ -83,6 +84,10 @@ export default function DashboardPage() {
             <RepositoryAnalyzer
               owner={selectedRepository.owner}
               repo={selectedRepository.name}
+            />
+
+            <AgentTaskRunner
+              repository={selectedRepository}
             />
           </>
         )}

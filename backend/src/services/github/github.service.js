@@ -476,3 +476,125 @@ export async function getRepositories(
   }));
 }
 
+/* =========================================================
+   GitHub Branching, Commits, and Pull Requests
+   ========================================================= */
+
+/**
+ * Create a new branch from a base branch
+ */
+export async function createBranch({
+  accessToken,
+  owner,
+  repo,
+  branchName,
+  baseBranch,
+}) {
+  const github = createGitHubClient(accessToken);
+  const base = baseBranch || (await getDefaultBranch({ accessToken, owner, repo }));
+
+  const refRes = await github.get(
+    `/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/git/ref/heads/${encodeURIComponent(base)}`
+  );
+  const baseSha = refRes.data?.object?.sha;
+
+  if (!baseSha) {
+    throw new Error(`Could not find base branch ${base} on ${owner}/${repo}`);
+  }
+
+  const createRefRes = await github.post(
+    `/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/git/refs`,
+    {
+      ref: `refs/heads/${branchName}`,
+      sha: baseSha,
+    }
+  );
+
+  return createRefRes.data;
+}
+
+/**
+ * Commit files to a specific branch on GitHub
+ */
+export async function commitAndPushFiles({
+  accessToken,
+  owner,
+  repo,
+  branchName,
+  files = [],
+  commitMessage = "Apply AI Agent changes via RepoAssistant",
+}) {
+  const github = createGitHubClient(accessToken);
+  const results = [];
+
+  for (const file of files) {
+    if (!file?.path) continue;
+
+    let existingSha;
+    try {
+      const existing = await github.get(
+        `/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/${file.path.split("/").map(encodeURIComponent).join("/")}?ref=${encodeURIComponent(branchName)}`
+      );
+      existingSha = existing.data?.sha;
+    } catch {
+      // File does not exist yet (creating brand new file)
+    }
+
+    const contentBase64 = Buffer.from(file.content ?? "").toString("base64");
+
+    const putRes = await github.put(
+      `/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/${file.path.split("/").map(encodeURIComponent).join("/")}`,
+      {
+        message: `${commitMessage}: ${file.path}`,
+        content: contentBase64,
+        branch: branchName,
+        sha: existingSha,
+      }
+    );
+
+    results.push({
+      path: file.path,
+      sha: putRes.data?.content?.sha,
+    });
+  }
+
+  return results;
+}
+
+/**
+ * Create a GitHub Pull Request
+ */
+export async function createPullRequest({
+  accessToken,
+  owner,
+  repo,
+  title,
+  body,
+  head,
+  base,
+}) {
+  const github = createGitHubClient(accessToken);
+  const baseBranch = base || (await getDefaultBranch({ accessToken, owner, repo }));
+
+  const response = await github.post(
+    `/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/pulls`,
+    {
+      title: title || "AI Agent proposed improvements",
+      body: body || "Changes generated, tested in sandbox, and verified by RepoAssistant AI Agent.",
+      head,
+      base: baseBranch,
+    }
+  );
+
+  return {
+    id: response.data.id,
+    number: response.data.number,
+    htmlUrl: response.data.html_url,
+    title: response.data.title,
+    body: response.data.body,
+    head: response.data.head?.ref,
+    base: response.data.base?.ref,
+    state: response.data.state,
+  };
+}
+

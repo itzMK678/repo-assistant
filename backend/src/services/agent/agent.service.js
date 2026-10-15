@@ -12,6 +12,10 @@ import {
     nebiusProvider,
 } from "./providers/nebius.provider.js";
 
+import {
+    readWorkspaceFile,
+} from "./workspace.service.js";
+
 export async function runAgent({
     task,
     repository,
@@ -49,16 +53,45 @@ export async function runAgent({
             model,
         });
 
+    const changedFiles = Array.from(context.filesChanged);
+    const filesWithContent = [];
+
+    for (const filePath of changedFiles) {
+        try {
+            const content = await readWorkspaceFile({
+                workspacePath,
+                filePath,
+            });
+
+            const lines = (content || "")
+                .split("\n")
+                .map((text) => ({ type: "added", text }));
+
+            filesWithContent.push({
+                path: filePath,
+                content,
+                status: "modified",
+                lines,
+            });
+        } catch {
+            filesWithContent.push({
+                path: filePath,
+                content: "",
+                status: "deleted",
+                lines: [{ type: "removed", text: `[File ${filePath} deleted]` }],
+            });
+        }
+    }
+
     return {
         sessionId,
         success:
             result.success,
         result,
-        changedFiles:
-            Array.from(
-                context.filesChanged
-            ),
+        changedFiles,
+        files: filesWithContent,
         toolResults:
             context.toolResults,
+        workspacePath,
     };
 }

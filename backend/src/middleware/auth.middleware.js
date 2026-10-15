@@ -28,3 +28,27 @@ export async function requireAuth(
     next(error);
   }
 }
+
+export async function optionalAuth(
+  req,
+  res,
+  next
+) {
+  try {
+    const sessionToken =
+      req.cookies?.repoassistant_session;
+
+    if (sessionToken) {
+      const user =
+        await getUserFromSession(sessionToken);
+
+      if (user) {
+        req.user = user;
+      }
+    }
+
+    next();
+  } catch {
+    next();
+  }
+}
